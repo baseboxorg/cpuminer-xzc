@@ -1,0 +1,2 @@
+# cpuminer-xzc
+xzc miner
