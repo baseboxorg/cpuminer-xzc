@@ -14,3 +14,18 @@ WORKDIR /cpuminer
 ENTRYPOINT	["./cpuminer"]
 
 CMD ["--help"]
+
+
+
+FROM alpine
+
+RUN apk add --no-cache --virtual=build-dependencies git cmake make gcc g++ libc-dev boost-dev && \
+    git clone --recursive -b kost https://github.com/kost/nheqminer.git /nheqminer && \
+    mkdir -p /nheqminer/nheqminer/build && \
+    cd /nheqminer/nheqminer/build && \
+    cmake -DSTATIC_BUILD=1 -DXENON=2 -DMARCH="-m64" .. && \
+    make && \
+    apk del --purge build-dependencies
+ automake autoconf pkgconf
+ 
+libcurl jansson zlib gmp
