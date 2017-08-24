@@ -1,5 +1,9 @@
 FROM ubuntu
 
+#ENV URL xzc.suprnova.cc:1598
+#ENV USERNAME xzc
+#ENV PASSWORD x
+
 #Install required packages
 RUN apt-get update && apt-get install -y \
                 git \
@@ -25,3 +29,4 @@ RUN ./autogen.sh && ./configure CFLAGS="-march=native" --with-crypto --with-curl
 ENTRYPOINT	["./opt/cpuminer-xzc"]
 
 CMD ["--help"]
+#CMD -a lyra2z  -o stratum+tcp://$URL  -u $USERNAME -p $PASSWORD
