@@ -1,5 +1,5 @@
-FROM phusion/baseimage:0.9.19
-
+#FROM phusion/baseimage:0.9.19
+FROM ubuntu
 #Install required packages
 RUN apt-get update && apt-get install -y \
                 git \
