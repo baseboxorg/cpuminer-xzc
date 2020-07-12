@@ -1,31 +1,38 @@
-FROM ubuntu
+FROM alpine:3.9
 
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get -qq install \
-    automake autoconf pkg-config libcurl4-openssl-dev libjansson-dev libssl-dev libgmp-dev clang git make nano screen && \
-    rm -rf /var/lib/apt/lists/*
+RUN set -x \
+    # Runtime dependencies.
+ && apk add --no-cache \
+        libcurl \
+        libgcc \
+        libstdc++ \
+        openssl \
+    # Build dependencies.
+ && apk add --no-cache -t .build-deps \
+        autoconf \
+        automake \
+        build-base \
+        curl \
+        curl-dev \
+        git \
+        openssl-dev \
+    # Compile from source code.
+ && git clone --recursive https://github.com/zcoinofficial/cpuminer.git /tmp/cpuminer \
+ && cd /tmp/cpuminer \
+ && ./autogen.sh \
+ && ./configure CFLAGS="-O2 -march=native" --with-crypto --with-curl \
+ && make install \
+    # Install dumb-init (avoid PID 1 issues).
+    # https://github.com/Yelp/dumb-init
+ && curl -Lo /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64 \
+ && chmod +x /usr/local/bin/dumb-init \
+    # Clean-up
+ && cd / \
+ && apk del --purge .build-deps \
+ && rm -rf /tmp/* \
+    # Verify
+ && cpuminer --cputest \
+ && cpuminer --version
 
-RUN git clone https://github.com/zcoinofficial/cpuminer-xzc.git /cpuminer && \
-    cd /cpuminer && \
-    ./build.sh
-
-WORKDIR /cpuminer
-
-ENTRYPOINT	["./cpuminer"]
-
-CMD ["--help"]
-
-
-
-FROM alpine
-
-RUN apk add --no-cache --virtual=build-dependencies git cmake make gcc g++ libc-dev boost-dev && \
-    git clone --recursive -b kost https://github.com/kost/nheqminer.git /nheqminer && \
-    mkdir -p /nheqminer/nheqminer/build && \
-    cd /nheqminer/nheqminer/build && \
-    cmake -DSTATIC_BUILD=1 -DXENON=2 -DMARCH="-m64" .. && \
-    make && \
-    apk del --purge build-dependencies
- automake autoconf pkgconf
- 
-libcurl jansson zlib gmp
+ENTRYPOINT ["dumb-init"]
+CMD ["cpuminer", "--help"]
