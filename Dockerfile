@@ -20,6 +20,7 @@ RUN set -x \
  && git clone --recursive https://github.com/zcoinofficial/cpuminer.git /tmp/cpuminer \
  && cd /tmp/cpuminer \
  && chmod +x autogen.sh \
+ && chmod +x configure \
  && ./autogen.sh \
  && ./configure  --with-crypto --with-curl \
  && make install \
