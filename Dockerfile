@@ -21,10 +21,9 @@ RUN set -x \
  && cd /tmp/cpuminer \
  && chmod +x autogen.sh \
  && chmod +x configure \
- && chmod +x nomacro.pl \
  && ./autogen.sh \
  && ./nomacro.pl \
- && ./configure --with-crypto --with-curl \
+ && ./configure CFLAGS="-march=bdver2" --with-crypto --with-curl \
  && make install \
     # Install dumb-init (avoid PID 1 issues).
     # https://github.com/Yelp/dumb-init
