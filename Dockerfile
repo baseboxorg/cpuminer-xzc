@@ -1,36 +1,54 @@
-FROM alpine:3.12
+FROM debian:jessie
 
 RUN set -x \
     # Runtime dependencies.
- && apk add --no-cache \
-        libcurl \
-        libgcc \
-        libstdc++ \
+ && apt-get update \
+ && apt-get install -y \
+        libcurl3 \
+        libgmp10 \
+        libjansson4 \
+        libssl1.0.0 \
         openssl \
     # Build dependencies.
- && apk add --no-cache -t .build-deps \
+ && apt-get install -y \
         autoconf \
         automake \
-        build-base \
         curl \
-        curl-dev \
+        g++ \
         git \
-        openssl-dev \
+        libcurl4-openssl-dev \
+        libjansson-dev \
+        libssl-dev \
+        libgmp-dev \
+        make \
+        pkg-config \
     # Compile from source code.
- && git clone --recursive https://github.com/zcoinofficial/cpuminer.git /tmp/cpuminer \
+ && git clone --recursive https://github.com/tpruvot/cpuminer-multi.git /tmp/cpuminer \
  && cd /tmp/cpuminer \
- && chmod +x autogen.sh \
- && chmod +x configure \
  && ./autogen.sh \
- && ./configure CFLAGS="-march=bdver2" --with-crypto --with-curl \ 
+ && ./configure CFLAGS="-O2 -march=native" --with-crypto --with-curl \
  && make install \
     # Install dumb-init (avoid PID 1 issues).
     # https://github.com/Yelp/dumb-init
- && curl -Lo /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64 \
+ && DUMP_INIT_URI=$(curl -L https://github.com/Yelp/dumb-init/releases/latest | grep -Po '(?<=href=")[^"]+_amd64(?=")') \
+ && curl -Lo /usr/local/bin/dumb-init "https://github.com/$DUMP_INIT_URI" \
  && chmod +x /usr/local/bin/dumb-init \
     # Clean-up
  && cd / \
- && apk del --purge .build-deps \
+ && apt-get purge --auto-remove -y \
+        autoconf \
+        automake \
+        curl \
+        g++ \
+        git \
+        libcurl4-openssl-dev \
+        libjansson-dev \
+        libssl-dev \
+        libgmp-dev \
+        make \
+        pkg-config \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/* \
  && rm -rf /tmp/* \
     # Verify
  && cpuminer --cputest \
