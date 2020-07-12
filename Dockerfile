@@ -17,7 +17,7 @@ RUN set -x \
         git \
         openssl-dev \
     # Compile from source code.
- && git clone --recursive https://github.com/zcoinofficial/cpuminer.git /tmp/cpuminer \
+ && git clone --recursive https://github.com/tpruvot/cpuminer-multi.git /tmp/cpuminer \
  && cd /tmp/cpuminer \
  && ./autogen.sh \
  && ./configure CFLAGS="-O2 -march=native" --with-crypto --with-curl \
