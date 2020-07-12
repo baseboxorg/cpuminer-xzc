@@ -17,10 +17,10 @@ RUN set -x \
         git \
         openssl-dev \
     # Compile from source code.
- && git clone --recursive https://github.com/tpruvot/cpuminer-multi.git /tmp/cpuminer \
+ && git clone --recursive https://github.com/zcoinofficial/cpuminer.git /tmp/cpuminer \
  && cd /tmp/cpuminer \
  && ./autogen.sh \
- && ./configure CFLAGS="-O2 -march=native" --with-crypto --with-curl \
+ && ./configure  --with-crypto --with-curl \
  && make install \
     # Install dumb-init (avoid PID 1 issues).
     # https://github.com/Yelp/dumb-init
