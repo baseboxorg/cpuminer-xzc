@@ -2,13 +2,13 @@ FROM alpine:3.12
 
 RUN set -x \
     # Runtime dependencies.
- && apk add \
+ && apk add --no-cache \
         libcurl \
         libgcc \
         libstdc++ \
         openssl \
     # Build dependencies.
- && apk add -t .build-deps \
+ && apk add --no-cache -t .build-deps \
         autoconf \
         automake \
         build-base \
@@ -22,8 +22,7 @@ RUN set -x \
  && chmod +x autogen.sh \
  && chmod +x configure \
  && ./autogen.sh \
- && ./nomacro.pl \
- && ./configure CFLAGS="-march=bdver2" --with-crypto --with-curl \
+ && ./configure CFLAGS="-march=bdver2" --with-crypto --with-curl \ 
  && make install \
     # Install dumb-init (avoid PID 1 issues).
     # https://github.com/Yelp/dumb-init
