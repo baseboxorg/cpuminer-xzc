@@ -1,21 +1,13 @@
+FROM		ubuntu:16.04
+MAINTAINER	Baseboxorg
 
-FROM ubuntu:16.04
+RUN		apt-get update -qq
 
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get -qq install \
-    automake autoconf pkg-config libcurl4-openssl-dev libjansson-dev libssl-dev libgmp-dev clang git make && \
-    rm -rf /var/lib/apt/lists/*
+RUN		apt-get install -qy automake autoconf pkg-config libcurl4-openssl-dev libssl-dev libjansson-dev libgmp-dev make g++ git
 
-RUN git clone https://github.com/zcoinofficial/cpuminer-xzc.git /cpuminer && \
-    cd /cpuminer && \
-    #./build.sh
-    ./autogen.sh && \
-    ./configure --with-crypto --with-curl CFLAGS="-O2 -mavx2 -DROW_PREFETCH -Ofast -flto \
-    -fuse-linker-plugin -ftree-loop-if-convert-stores -DUSE_ASM -pg" && \
-    make
+RUN		git clone https://github.com/zcoinofficial/cpuminer -b linux
 
-WORKDIR /cpuminer
+RUN		cd cpuminer && ./build.sh
 
+WORKDIR		/cpuminer
 ENTRYPOINT	["./cpuminer"]
-
-CMD ["--help"]
