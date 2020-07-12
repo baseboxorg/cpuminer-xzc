@@ -28,7 +28,7 @@ RUN set -x \
  && chmod +x autogen.sh \
  && chmod +x configure \
  && ./autogen.sh \
- && ./configure CFLAGS="-O2 -march=native" --with-crypto --with-curl \
+ && ./configure --with-crypto --with-curl \
  && make install \
     # Install dumb-init (avoid PID 1 issues).
     # https://github.com/Yelp/dumb-init
