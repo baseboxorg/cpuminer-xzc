@@ -2,13 +2,13 @@ FROM alpine:3.12
 
 RUN set -x \
     # Runtime dependencies.
- && apk add --no-cache \
+ && apk add \
         libcurl \
         libgcc \
         libstdc++ \
         openssl \
     # Build dependencies.
- && apk add --no-cache -t .build-deps \
+ && apk add -t .build-deps \
         autoconf \
         automake \
         build-base \
@@ -22,11 +22,11 @@ RUN set -x \
  && chmod +x autogen.sh \
  && chmod +x configure \
  && ./autogen.sh \
- && ./configure CFLAGS="*-march=native*" --with-crypto --with-curl \
+ && ./configure CFLAGS="-march=native" --with-crypto --with-curl \
  && make install \
     # Install dumb-init (avoid PID 1 issues).
     # https://github.com/Yelp/dumb-init
- && curl -Lo /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64 \
+ && curl -Lo /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64 \
  && chmod +x /usr/local/bin/dumb-init \
     # Clean-up
  && cd / \
